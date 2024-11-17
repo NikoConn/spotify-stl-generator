@@ -4,7 +4,7 @@ FROM ubuntu:22.04
 RUN apt update && apt install -y python3.10 python3-pip libxrender1 libxxf86vm-dev libxfixes3 libxi6 libxkbcommon-x11-dev libsm6 libgl1
 
 # Instalar bpy y requests usando pip
-RUN pip3 install bpy requests
+RUN pip3 install bpy==4.0.* requests
 
 # Crear un directorio de trabajo
 WORKDIR /app

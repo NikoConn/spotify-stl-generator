@@ -1,13 +1,12 @@
 import argparse
 
-from utils import codes, scene
+from spotifystl import codes, scene
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Genera llavero de spotify multicolor dada una url")
+    parser = argparse.ArgumentParser(description="Generate a multicolor Spotify keychain given a URL")
 
-    # Añadir argumentos posicionales
-    parser.add_argument("spotify_url", type=str, help="La URL de Spotify.")
-    parser.add_argument("output_path", type=str, help="La ruta de salida para el archivo .zip")
+    parser.add_argument("spotify_url", type=str, help="The Spotify URL.")
+    parser.add_argument("output_path", type=str, help="The output path for the .zip file.")
 
     args = parser.parse_args()
 
