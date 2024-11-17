@@ -1,2 +1,2 @@
-bpy==4.0.*
+bpy==4.2.*
 requests

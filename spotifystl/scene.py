@@ -49,19 +49,12 @@ def generate_stl(svg_content, output_path):
 
     code1.location = (0, 0, 0.25)
     bpy.ops.transform.resize(value=(500, 500, 500))
+    bpy.ops.object.transform_apply(scale=True)
 
     #duplicate and move
     bpy.ops.object.duplicate()
     code2 = bpy.context.active_object
-    code2.location = (0, 0, 1)
-
-
-    code1.select_set(True)
-    bpy.ops.object.join()
-
-    codes = bpy.context.active_object
-
-    bpy.ops.object.transform_apply(scale=True)
+    code2.location = (0, 0, 0.75)
 
     # Añade rectángulo
     bpy.ops.mesh.primitive_cube_add(location=(45, 11.25, 0.5))
@@ -83,21 +76,29 @@ def generate_stl(svg_content, output_path):
     # Salir del modo edición
     bpy.ops.object.mode_set(mode='OBJECT')
 
-    bool_one = obj.modifiers.new(type="BOOLEAN", name="bool 1")
-    bool_one.object = codes
-    bool_one.operation = 'DIFFERENCE'
+    #bool con codigo
+    bool = obj.modifiers.new(type="BOOLEAN", name="bool 1")
+    bool.object = code1
+    bool.operation = 'DIFFERENCE'
+
+    bool = obj.modifiers.new(type="BOOLEAN", name="bool 2")
+    bool.object = code2
+    bool.operation = 'DIFFERENCE'
 
     #añadir cosa del llavero
     bpy.ops.mesh.primitive_cylinder_add(location=(3.75, 18.5, 0))
     cyl = bpy.context.active_object
     bpy.ops.transform.resize(value=(1.5,1.5,3))
 
-    bool_one = obj.modifiers.new(type="BOOLEAN", name="bool 3")
-    bool_one.object = cyl
-    bool_one.operation = 'DIFFERENCE'
+    bool = obj.modifiers.new(type="BOOLEAN", name="bool 3")
+    bool.object = cyl
+    bool.operation = 'DIFFERENCE'
+    
+    bpy.ops.object.select_all(action='DESELECT')
+    bpy.context.view_layer.objects.active = obj
+    obj.select_set(True)
+    [bpy.ops.object.modifier_apply(modifier="bool {}".format(x)) for x in range(1,4)]
 
-
-    # Exportar archivos STL
     with tempfile.NamedTemporaryFile(suffix=".stl", delete=False) as codes_tmp, \
         tempfile.NamedTemporaryFile(suffix=".stl", delete=False) as rectangle_tmp:
 
@@ -106,12 +107,16 @@ def generate_stl(svg_content, output_path):
 
         bpy.ops.object.select_all(action='DESELECT')
 
-        codes.select_set(True)
-        bpy.ops.export_mesh.stl(filepath=codes_stl_path, use_selection=True)
+        code1.select_set(True)
+        code2.select_set(True)
+        bpy.ops.wm.stl_export(filepath=codes_stl_path, export_selected_objects=True)
 
+        code1.select_set(False)
+        code2.select_set(False)
         bpy.ops.object.select_all(action='DESELECT')
+        bpy.context.view_layer.objects.active = obj
         obj.select_set(True)
-        bpy.ops.export_mesh.stl(filepath=rectangle_stl_path, use_selection=True)
+        bpy.ops.wm.stl_export(filepath=rectangle_stl_path, export_selected_objects=True)
 
         # Crear archivo ZIP y añadir los archivos STL
         with zipfile.ZipFile(output_path, 'w') as zipf:
